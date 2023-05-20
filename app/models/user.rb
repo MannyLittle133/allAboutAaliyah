@@ -26,4 +26,20 @@ class User < ApplicationRecord
     self.session_token ||= generate_session_token
   end
 
+    # determine the field you need to query: 
+    #   * `email` if `credential` matches `URI::MailTo::EMAIL_REGEXP`
+    #   * `username` if not
+    # find the user whose email/username is equal to `credential`
+
+    # if no such user exists, return a falsey value
+
+    # if a matching user exists, use `authenticate` to check the provided password
+    # return the user if the password is correct, otherwise return a falsey value
+
+  def self.find_by_credentials(credential, password)
+    field = credential =~ URI::MailTo::EMAIL_REGEXP ? :email : :username
+    user = User.find_by(field => credential)
+    user&.authenticate(password)
+  end
+
 end
