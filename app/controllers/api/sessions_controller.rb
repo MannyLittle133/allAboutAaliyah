@@ -1,4 +1,5 @@
 class Api::SessionsController < ApplicationController
+
   def show
     if current_user
       @user = current_user
@@ -24,4 +25,5 @@ class Api::SessionsController < ApplicationController
     logout!
     render json: { message: 'success' }
   end
+  
 end
