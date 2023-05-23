@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
     before_action :snake_case_params
 
     def current_user
-        @current_user ||= # user whose `session_token` == token in `session` cookie
+        @current_user ||= User.find_by(session_token: session[:session_token])# user whose `session_token` == token in `session` cookie
     end
     
     def login!(user)
