@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::API
 
   include ActionController::RequestForgeryProtection
-  
+  rescue_from BrewException, with: :handle_brew_exception
+
   rescue_from StandardError, with: :unhandled_error
   rescue_from ActionController::InvalidAuthenticityToken,
     with: :invalid_authenticity_token
@@ -9,8 +10,26 @@ class ApplicationController < ActionController::API
   protect_from_forgery with: :exception
   before_action :snake_case_params, :attach_authenticity_token
 
+   def test
+        if params.has_key?(:login)
+            login!(User.first)
+        elsif params.has_key?(:logout)
+            logout!
+        end
+
+        if current_user
+            render json: { user: current_user.slice('id', 'username', 'session_token') }
+        else
+            render json: ['No current user']
+        end
+    end
+
   def current_user
     @current_user ||= User.find_by(session_token: session[:session_token])
+  end
+
+  def handle_brew_exception
+    render json: ["I can't brew; I'm a teapot!"], status: 418
   end
 
   def login!(user)
